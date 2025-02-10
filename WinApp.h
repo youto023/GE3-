@@ -1,36 +1,42 @@
 #pragma once
-#include"Windows.h"
 #include<cstdint>
+#include<Windows.h>
+#include"externals/DirectXTex/DirectXTex.h"
+#include"externals/imgui/imgui.h"
+#include"externals/imgui/imgui_impl_dx12.h"
+#include"externals/imgui/imgui_impl_win32.h"
+
+
+
+
+
 
 class WinApp
 {
-public://静的メンバ関数
+public: 
 	static LRESULT CALLBACK WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-	//getter
-	HWND GetHwnd()const { return hwnd; }
-
-	//getter
-	HINSTANCE GetHInstance()const { return wc.hInstance; }
 public:
 	//初期化
 	void Initialize();
+	//更新
+	void Update();
 
+	//クライアント領域のサイズ
+	static const int32_t kWindowWidth = 1280;
+	static const int32_t kWindowHeight = 720;
 
+	HWND GetHwnd()const { return hwnd; }
+	HINSTANCE GetHinstance()const { return wc.hInstance; }
 
 	//終了
 	void Finalize();
 
-
-	static	const int32_t kCLientWidth = 1280;
-	static	const int32_t kCLientHeight = 720;
 	//メッセージの処理
 	bool ProcessMessage();
 
-
 private:
-
-	//ウィンドウタイトル
+	//ウインドウハンドル
 	HWND hwnd = nullptr;
 
 	WNDCLASS wc{};

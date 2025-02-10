@@ -1,112 +1,77 @@
 #include "WinApp.h"
-#include<cmath>
-#include "externals/imgui/imgui.h"
-//#include"Windows.h"
+#pragma comment(lib, "winmm.lib")
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
 
-//ウィンドウプロシージャ
-LRESULT CALLBACK WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
-
-	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam))
-	{
+LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
+{
+	if (ImGui_ImplWin32_WndProcHandler(hwnd, msg, wparam, lparam)) {
 		return true;
 	}
-
-
-
 	//メッセージに応じてゲーム固有の処理を行う
 	switch (msg) {
-		//ウィンドウが破棄された
+		//ウインドウが破棄された
 	case WM_DESTROY:
-		//osに対して、アプリの終了を伝える
+		//OSに対して、アプリの終了を伝える
 		PostQuitMessage(0);
 		return 0;
-
 	}
 
 	//標準のメッセージ処理を行う
 	return DefWindowProc(hwnd, msg, wparam, lparam);
-
 }
-
 
 void WinApp::Initialize()
 {
-
+	//システムタイマーの分解能を上げる
+	timeBeginPeriod(1);
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 
-
-	//ウィンドウプロシージャ
+	//ウインドウプロシージャ
 	wc.lpfnWndProc = WindowProc;
-
-	//ウィンドウクラス名
+	//ウインドウクラス名
 	wc.lpszClassName = L"CG2WindowClass";
-
 	//インスタンスハンドル
 	wc.hInstance = GetModuleHandle(nullptr);
-
 	//カーソル
 	wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 
-	//ウィンドウクラスを登録する
+	//ウインドウクラスを登録する
 	RegisterClass(&wc);
 
-	/*const int32_t kCLientWidth = 1280;
-	const int32_t kCLientHeight = 720;*/
 
-	RECT wrc = { 0,0,kCLientWidth,kCLientHeight };
+	//ウインドウサイズを表す構造体にクライアント領域を入れる
+	RECT wrc = { 0,0,kWindowWidth,kWindowHeight};
 
+	//クライアント領域を元に実際のサイズにwrcを変更してもらう
 	AdjustWindowRect(&wrc, WS_OVERLAPPEDWINDOW, false);
 
+	//ウインドウの生成
+	 hwnd = CreateWindow(
+		wc.lpszClassName,		//利用するクラス名
+		L"CG2",					//タイトルバーの文字
+		WS_OVERLAPPEDWINDOW,		//よく見るウインドウスタイル
+		CW_USEDEFAULT,			//表示X座標(Windowsに任せる)
+		CW_USEDEFAULT,			//表示Y座標(WindowsOSに任せる)
+		wrc.right - wrc.left,	//ウインドウ横幅
+		wrc.bottom - wrc.top,	//ウインドウ縦幅
+		nullptr,				//親ウインドウハンドル
+		nullptr,				//メニューハンドル
+		wc.hInstance,			//インスタンスハンドル
+		nullptr);				//オプション
 
 
-	//出力ウィンドウへの文字出力
-	//OutputDebugStringA("Hello,DirectX!\n");
-
-
-
-
-	//ウィンドウの生成
-	hwnd = CreateWindow(
-		wc.lpszClassName,
-		L"CG2",
-		WS_OVERLAPPEDWINDOW,
-		CW_USEDEFAULT,
-		CW_USEDEFAULT,
-		wrc.right - wrc.left,
-		wrc.bottom - wrc.top,
-		nullptr,
-		nullptr,
-		wc.hInstance,
-		nullptr
-	);
-
-	//#ifdef DEBUG
-	//	ID3D12Debug1* debugController = nullptr;
-	//	if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController)))) {
-	//		//デバックレイヤーを有効化する
-	//		debugController->EnableDebugLayer();
-	//		//さらにGPU側でもチェックを行うようにする
-	//		debugController->SetEnableGPUBasedValidation(TRUE);
-	//	}
-	//#endif // DEBUG
-
-
-
-
+	//ウインドウを表示する
 	ShowWindow(hwnd, SW_SHOW);
-
 }
 
-
-
-void WinApp::Finalize()
+void WinApp::Update()
 {
+}
 
+void WinApp::Finalize() {
 	CloseWindow(hwnd);
-	//終了処理
 	CoUninitialize();
 }
 
@@ -114,15 +79,14 @@ bool WinApp::ProcessMessage()
 {
 	MSG msg{};
 
+	//Windowにメッセージが来てたら最優先で処理させる
 	if (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE)) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
 	if (msg.message == WM_QUIT) {
-
 		return true;
 	}
-
 	return false;
 }

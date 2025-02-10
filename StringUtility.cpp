@@ -1,7 +1,10 @@
 #include "StringUtility.h"
-#include<Windows.h>
-#include<dxgidebug.h>
-std::wstring StringUtility::ConvertString(const std::string& str) {
+
+#include<windows.h>
+namespace StringUtility
+{
+	//stringをwStringに変換する
+std::wstring ConvertString(const std::string& str) {
 	if (str.empty()) {
 		return std::wstring();
 	}
@@ -15,7 +18,8 @@ std::wstring StringUtility::ConvertString(const std::string& str) {
 	return result;
 }
 
-std::string StringUtility::ConvertString(const std::wstring& str) {
+	//wstringをstringに変換する
+std::string ConvertString(const std::wstring& str) {
 	if (str.empty()) {
 		return std::string();
 	}
@@ -25,6 +29,7 @@ std::string StringUtility::ConvertString(const std::wstring& str) {
 		return std::string();
 	}
 	std::string result(sizeNeeded, 0);
-	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), result.data(), sizeNeeded, NULL, NULL);
+	WideCharToMultiByte(CP_UTF8, 0, str.data(), static_cast<int>(str.size()), &result[0], sizeNeeded, NULL, NULL);
 	return result;
 }
+};
