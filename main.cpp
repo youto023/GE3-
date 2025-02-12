@@ -419,6 +419,19 @@ void ReportLiveObjects() {
 	}
 }
 
+Transform transform{
+	{1.0f, 1.0f, 1.0f},
+	{0.0f, 3.0f, 0.0f},
+	{0.0f, 0.0f, 0.0f}
+};
+// 判定を行うコールバック関数
+void rotate_result(int result) {
+
+	transform.rotate.x += 0.1f;
+
+}
+// コールバック関数のプロトタイプ宣言
+typedef void (*Callback)(int result);
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
@@ -691,11 +704,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	indexDataSprite[4] = 3;
 	indexDataSprite[5] = 2;
 
-	Transform transform{
-	    {1.0f, 1.0f, 1.0f},
-        {0.0f, 3.0f, 0.0f},
-        {0.0f, 0.0f, 0.0f}
-    };
 	Transform cameraTransform{
 	    {1.0f, 1.0f, 1.0f },
         {0.0f, 0.0f, 0.0f },
